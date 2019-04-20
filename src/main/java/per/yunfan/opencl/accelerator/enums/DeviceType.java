@@ -7,13 +7,41 @@ import per.yunfan.opencl.accelerator.exceptions.UnknownDeviceTypeException;
  * OpenCL device type enum
  */
 public enum DeviceType {
+    /**
+     * All devices
+     */
     ALL,
+
+    /**
+     * Platform default devices
+     */
     DEFAULT,
+
+    /**
+     * Host CPU devices
+     */
     CPU,
+
+    /**
+     * GPU devices
+     */
     GPU,
+
+    /**
+     * External acceleration device
+     */
     ACCELERATOR,
+
+    /**
+     * Custom devices
+     */
     CUSTOM;
 
+    /**
+     * Return the jocl type magic number
+     *
+     * @return jocl device type
+     */
     public long toCLType() {
         switch (this) {
             case ALL:
@@ -32,6 +60,12 @@ public enum DeviceType {
         throw new UnknownDeviceTypeException();
     }
 
+    /**
+     * Convert jocl device type to DeviceType enum
+     *
+     * @param type jocl device type
+     * @return DeviceType enum value
+     */
     public static DeviceType fromCLType(long type) {
         if (type == CL.CL_DEVICE_TYPE_ALL) {
             return ALL;
