@@ -1,13 +1,20 @@
 package per.yunfan.opencl.accelerator.wrap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jocl.CL;
 import org.jocl.cl_context;
-import per.yunfan.opencl.accelerator.gc.Cleaner;
 
 /**
  * Wrapped class of OpenCL context
  */
-public class Context implements OpenCLObject<cl_context> {
+public class Context implements OpenCLObject<cl_context>, AutoCloseable {
+
+
+    /**
+     * Test logger object
+     */
+    private static final Logger LOG = LogManager.getLogger(Context.class);
 
     /**
      * Raw context pointer object
@@ -21,7 +28,6 @@ public class Context implements OpenCLObject<cl_context> {
      */
     Context(cl_context context) {
         this.context = context;
-        Cleaner.add(this, () -> CL.clReleaseContext(this.context));
     }
 
     /**
@@ -38,5 +44,11 @@ public class Context implements OpenCLObject<cl_context> {
     @Override
     public String toString() {
         return this.context.toString();
+    }
+
+    @Override
+    public void close() {
+        LOG.info("Released OpenCL context: " + this.toString());
+        CL.clReleaseContext(this.context);
     }
 }

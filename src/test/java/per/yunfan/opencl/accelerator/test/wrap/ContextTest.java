@@ -32,11 +32,12 @@ public class ContextTest {
                     LOG.warn("OpenCL platform: " + platform + " does not have any devices!");
                 }
                 for (Device device : devices) {
-                    Context context = device.createContext();
-                    LOG.info("Device " + device.getDeviceName() + " has created context: " + context);
+                    try (Context context = device.createContext()) {
+                        LOG.info("Device " + device.getDeviceName() + " has created context: " + context);
+                    }
                 }
-                System.gc(); //Test context release
-                Thread.sleep(1000);
+                System.gc();
+                Thread.sleep(3000);
             }
         } catch (NoPlatformException e) {
             LOG.error("OpenCL platform not found!", e);

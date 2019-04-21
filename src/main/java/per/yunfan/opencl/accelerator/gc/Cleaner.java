@@ -9,6 +9,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Cleaner {
 
@@ -25,16 +26,16 @@ public class Cleaner {
     /**
      * Reference and callback function map
      */
-    private static final Map<Reference<?>, Runnable> TASK_MAP = new ConcurrentHashMap<>();
+    public static final Map<Reference<?>, Runnable> TASK_MAP = new ConcurrentHashMap<>();
 
     /**
      * is clean thread started
      */
-    private static volatile boolean isStarted = false;
+    private static AtomicBoolean isStarted = new AtomicBoolean(false);
 
 
     static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> isStarted = false));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> isStarted.set(false)));
     }
 
     /**
@@ -44,14 +45,14 @@ public class Cleaner {
      * @param callback    Clean callback function
      */
     public static void add(Object neededClean, Runnable callback) {
-        if (isStarted) {
+        if (isStarted.get()) {
             PhantomReference<Object> reference = new PhantomReference<>(neededClean, REFERENCE_QUEUE);
             TASK_MAP.put(reference, callback);
         } else {
-            isStarted = true;
+            isStarted.set(true);
             startCleanThread();
         }
-        LOG.info("Register auto clean object: " + neededClean);
+        LOG.info("Registering auto clean object: " + neededClean);
     }
 
     /**
@@ -59,16 +60,19 @@ public class Cleaner {
      */
     private static void startCleanThread() {
         new Thread(() -> {
-            while (isStarted) {
+            while (isStarted.get()) {
                 try {
                     Reference<?> refer = REFERENCE_QUEUE.remove();
                     TASK_MAP.remove(refer).run();
+                    refer.clear();
+                    LOG.info("Cleaner has released an object.");
                 } catch (InterruptedException e) {
-                    if (isStarted) {
+                    if (isStarted.get()) {
                         LOG.error("Auto clean thread is interrupted", e);
                     }
                 }
             }
+            LOG.info("Stopping clean thread.");
         }).start();
     }
 }
