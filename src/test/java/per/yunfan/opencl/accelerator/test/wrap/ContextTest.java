@@ -5,24 +5,25 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import per.yunfan.opencl.accelerator.enums.DeviceType;
 import per.yunfan.opencl.accelerator.exceptions.NoPlatformException;
+import per.yunfan.opencl.accelerator.wrap.Context;
 import per.yunfan.opencl.accelerator.wrap.Device;
 import per.yunfan.opencl.accelerator.wrap.Platform;
 
 import java.util.List;
 
 /**
- * Unit test class for Device
+ * Unit test class for Context
  */
-public class DeviceTest {
-
+public class ContextTest {
     /**
      * Test logger object
      */
-    private static final Logger LOG = LogManager.getLogger(DeviceTest.class);
+    private static final Logger LOG = LogManager.getLogger(ContextTest.class);
+
 
     @Test
-    public void testAllDevices() {
-        LOG.info("Test init all OpenCL devices");
+    public void testCreateContext() throws InterruptedException {
+        LOG.info("Test create OpenCL context");
         try {
             List<Platform> platforms = Platform.getAllPlatforms();
             for (Platform platform : platforms) {
@@ -31,14 +32,14 @@ public class DeviceTest {
                     LOG.warn("OpenCL platform: " + platform + " does not have any devices!");
                 }
                 for (Device device : devices) {
-                    LOG.info("Found device: " + device);
-                    LOG.info("Device type is: " + device.deviceType());
+                    Context context = device.createContext();
+                    LOG.info("Device " + device.getDeviceName() + " has created context: " + context);
                 }
+                System.gc(); //Test context release
+                Thread.sleep(1000);
             }
         } catch (NoPlatformException e) {
             LOG.error("OpenCL platform not found!", e);
         }
     }
-
-
 }

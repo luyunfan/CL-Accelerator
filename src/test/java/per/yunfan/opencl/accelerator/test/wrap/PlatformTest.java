@@ -2,15 +2,11 @@ package per.yunfan.opencl.accelerator.test.wrap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jocl.cl_platform_id;
 import org.junit.jupiter.api.Test;
-import per.yunfan.opencl.accelerator.OpenClUtil;
 import per.yunfan.opencl.accelerator.exceptions.NoPlatformException;
 import per.yunfan.opencl.accelerator.wrap.Platform;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Unit test class for Platform

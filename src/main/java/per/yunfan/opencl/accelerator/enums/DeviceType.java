@@ -4,7 +4,7 @@ import org.jocl.CL;
 import per.yunfan.opencl.accelerator.exceptions.UnknownDeviceTypeException;
 
 /**
- * OpenCL device type enum
+ * OpenCL device deviceType enum
  */
 public enum DeviceType {
     /**
@@ -38,9 +38,9 @@ public enum DeviceType {
     CUSTOM;
 
     /**
-     * Return the jocl type magic number
+     * Return the jocl deviceType magic number
      *
-     * @return jocl device type
+     * @return jocl device deviceType
      */
     public long toCLType() {
         switch (this) {
@@ -61,9 +61,9 @@ public enum DeviceType {
     }
 
     /**
-     * Convert jocl device type to DeviceType enum
+     * Convert jocl device deviceType to DeviceType enum
      *
-     * @param type jocl device type
+     * @param type jocl device deviceType
      * @return DeviceType enum value
      */
     public static DeviceType fromCLType(long type) {

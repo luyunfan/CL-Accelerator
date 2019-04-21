@@ -156,7 +156,7 @@ public class Main {
      * command queue, program and kernel.
      */
     private static void initCL() {
-        // The platform and device type that will be used
+        // The platform and device deviceType that will be used
         final int platformIndex = 0;
         final long deviceType = CL_DEVICE_TYPE_ALL;
 

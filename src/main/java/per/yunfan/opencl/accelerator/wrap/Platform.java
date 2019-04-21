@@ -40,7 +40,7 @@ public class Platform implements OpenCLObject<cl_platform_id> {
     /**
      * Get all OpenCL devices by platform
      *
-     * @param type The device type
+     * @param type The device deviceType
      * @return All OpenCL devices List
      */
     public List<Device> getAllDevices(DeviceType type) {
@@ -54,7 +54,7 @@ public class Platform implements OpenCLObject<cl_platform_id> {
         CL.clGetDeviceIDs(platform, deviceType, numDevices, allRawDevices, null);
         return Arrays.stream(allRawDevices)
                 .filter(Objects::nonNull)
-                .map(Device::new)
+                .map(rawDevice -> new Device(rawDevice, this))
                 .collect(Collectors.toList());
     }
 
