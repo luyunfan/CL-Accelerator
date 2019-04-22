@@ -5,11 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.jocl.CL;
 import org.jocl.cl_context;
 import org.jocl.cl_program;
+import per.yunfan.opencl.accelerator.exceptions.ContextReleasedException;
+import per.yunfan.opencl.accelerator.gc.Closeable;
 
 /**
  * Wrapped class of OpenCL context
  */
-public class Context implements OpenCLObject<cl_context>, AutoCloseable {
+public class Context implements OpenCLObject<cl_context>, Closeable {
 
 
     /**
@@ -26,6 +28,11 @@ public class Context implements OpenCLObject<cl_context>, AutoCloseable {
      * Device object of this context
      */
     private final Device device;
+
+    /**
+     * Does this context has released
+     */
+    private boolean hasReleased = false;
 
     /**
      * Context wrapper constructor
@@ -45,13 +52,19 @@ public class Context implements OpenCLObject<cl_context>, AutoCloseable {
      * @return The Program object
      */
     public Program createProgram(String clCode) {
-        cl_program program = CL.clCreateProgramWithSource(this.context,
+        if (this.hasReleased) {
+            ContextReleasedException exception = new ContextReleasedException();
+            LOG.error("Create OpenCL program failure! Context has been released. ", exception);
+            throw exception;
+        }
+        cl_program program = CL.clCreateProgramWithSource(
+                this.context,
                 1,
                 new String[]{clCode},
                 null,
                 null
         );
-        return new Program(program);
+        return new Program(program, this);
     }
 
     /**
@@ -82,7 +95,18 @@ public class Context implements OpenCLObject<cl_context>, AutoCloseable {
      */
     @Override
     public void close() {
-        LOG.info("Released OpenCL context: " + this.toString());
-        CL.clReleaseContext(this.context);
+        if (!this.hasReleased) {
+            LOG.info("Released OpenCL context: " + this.toString());
+            CL.clReleaseContext(this.context);
+            this.hasReleased = true;
+        }
+    }
+
+    /**
+     * @return Does the resources has been released
+     */
+    @Override
+    public boolean hasReleased() {
+        return this.hasReleased;
     }
 }

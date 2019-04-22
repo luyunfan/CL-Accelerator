@@ -6,11 +6,13 @@ import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.jocl.cl_program;
 import per.yunfan.opencl.accelerator.exceptions.BuildCLProgramFailureException;
+import per.yunfan.opencl.accelerator.exceptions.ProgramReleasedException;
+import per.yunfan.opencl.accelerator.gc.Closeable;
 
 /**
  * Wrapped class of OpenCL program
  */
-public class Program implements OpenCLObject<cl_program>, AutoCloseable {
+public class Program implements OpenCLObject<cl_program>, Closeable {
 
     /**
      * Test logger object
@@ -26,6 +28,11 @@ public class Program implements OpenCLObject<cl_program>, AutoCloseable {
      * The context object of this program
      */
     private final Context context;
+
+    /**
+     * Does this context has released
+     */
+    private boolean hasReleased = false;
 
     /**
      * Program wrapper constructor
@@ -44,6 +51,11 @@ public class Program implements OpenCLObject<cl_program>, AutoCloseable {
      * @throws BuildCLProgramFailureException If build failure, then throw this exception
      */
     public void build() throws BuildCLProgramFailureException {
+        if (this.hasReleased) {
+            ProgramReleasedException exception = new ProgramReleasedException();
+            LOG.error("Build OpenCL program failure! Program has been released. ", exception);
+            throw exception;
+        }
         Device buildDevice = this.context.getDevice();
         int isSuccess = CL.clBuildProgram(
                 this.program,
@@ -89,7 +101,18 @@ public class Program implements OpenCLObject<cl_program>, AutoCloseable {
      */
     @Override
     public void close() {
-        LOG.info("Released OpenCL program: " + this.toString());
-        CL.clReleaseProgram(this.program);
+        if (!this.hasReleased) {
+            LOG.info("Released OpenCL program: " + this.toString());
+            CL.clReleaseProgram(this.program);
+            this.hasReleased = true;
+        }
+    }
+
+    /**
+     * @return Does the resources has been released
+     */
+    @Override
+    public boolean hasReleased() {
+        return this.hasReleased;
     }
 }
