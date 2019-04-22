@@ -22,7 +22,7 @@ public class CleanerTest {
         }
         System.gc();
         Thread.sleep(3000);
-        Assertions.assertEquals(num.get(),result);
+        Assertions.assertEquals(num.get(), result);
     }
 
     private class TestClass {

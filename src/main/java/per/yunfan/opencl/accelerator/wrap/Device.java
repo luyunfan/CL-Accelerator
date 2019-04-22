@@ -3,9 +3,6 @@ package per.yunfan.opencl.accelerator.wrap;
 import org.jocl.*;
 import per.yunfan.opencl.accelerator.enums.DeviceType;
 
-import static org.jocl.CL.CL_CONTEXT_PLATFORM;
-import static org.jocl.CL.clCreateContext;
-
 /**
  * OpenCL Device wrapped class
  */
@@ -71,8 +68,8 @@ public class Device implements OpenCLObject<cl_device_id> {
 
     public Context createContext() {
         cl_context_properties contextProperties = new cl_context_properties();
-        contextProperties.addProperty(CL_CONTEXT_PLATFORM, platform.rawPointer());
-        cl_context context = clCreateContext(contextProperties, 1, new cl_device_id[]{device},
+        contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platform.rawPointer());
+        cl_context context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{device},
                 null, null, null);
         return new Context(context);
     }
