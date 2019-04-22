@@ -71,7 +71,7 @@ public class Device implements OpenCLObject<cl_device_id> {
         contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platform.rawPointer());
         cl_context context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{device},
                 null, null, null);
-        return new Context(context);
+        return new Context(context, this);
     }
 
     /**

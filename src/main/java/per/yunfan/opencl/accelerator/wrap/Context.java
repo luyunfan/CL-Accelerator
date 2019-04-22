@@ -23,12 +23,19 @@ public class Context implements OpenCLObject<cl_context>, AutoCloseable {
     private final cl_context context;
 
     /**
+     * Device object of this context
+     */
+    private final Device device;
+
+    /**
      * Context wrapper constructor
      *
      * @param context Raw context pointer object
+     * @param device  The device object of this context
      */
-    Context(cl_context context) {
+    Context(cl_context context, Device device) {
         this.context = context;
+        this.device = device;
     }
 
     /**
@@ -45,6 +52,13 @@ public class Context implements OpenCLObject<cl_context>, AutoCloseable {
                 null
         );
         return new Program(program);
+    }
+
+    /**
+     * @return The device object of this context
+     */
+    public Device getDevice() {
+        return this.device;
     }
 
     /**

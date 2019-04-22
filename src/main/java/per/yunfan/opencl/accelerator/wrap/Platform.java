@@ -70,7 +70,7 @@ public class Platform implements OpenCLObject<cl_platform_id> {
         cl_platform_id[] raws = new cl_platform_id[maxNum];
         int[] actuallyPlatformNum = new int[1];
         int error = CL.clGetPlatformIDs(maxNum, raws, actuallyPlatformNum);
-        if (error != 0) {
+        if (error != CL.CL_SUCCESS) {
             LOG.error("Could not find any OpenCL platformPointer!");
             throw new NoPlatformException();
         }
@@ -91,14 +91,14 @@ public class Platform implements OpenCLObject<cl_platform_id> {
         LOG.info("Starting get all OpenCL platform");
         int[] actuallyPlatformNum = new int[1];
         int error = CL.clGetPlatformIDs(50, null, actuallyPlatformNum);
-        if (error != 0) {
+        if (error != CL.CL_SUCCESS) {
             LOG.error("Could not find any OpenCL platform!");
             throw new NoPlatformException();
         }
         cl_platform_id[] raws = new cl_platform_id[actuallyPlatformNum[0]];
         error = CL.clGetPlatformIDs(actuallyPlatformNum[0], raws, actuallyPlatformNum);
 
-        if (error != 0) {
+        if (error != CL.CL_SUCCESS) {
             LOG.error("Could not find any OpenCL platform!");
             throw new NoPlatformException();
         }
