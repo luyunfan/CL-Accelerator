@@ -8,6 +8,12 @@ import org.jocl.cl_program;
 import per.yunfan.opencl.accelerator.exceptions.ContextReleasedException;
 import per.yunfan.opencl.accelerator.gc.Closeable;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
 /**
  * Wrapped class of OpenCL context
  */
@@ -51,12 +57,9 @@ public class Context implements OpenCLObject<cl_context>, Closeable {
      * @param clCode OpenCL code string in memory
      * @return The Program object
      */
-    public Program createProgram(String clCode) {
-        if (this.hasReleased) {
-            ContextReleasedException exception = new ContextReleasedException();
-            LOG.error("Create OpenCL program failure! Context has been released. ", exception);
-            throw exception;
-        }
+    public Program createProgramWithSource(String clCode) {
+        this.checkReleased();
+        LOG.info("Create OpenCL program by source: " + clCode);
         cl_program program = CL.clCreateProgramWithSource(
                 this.context,
                 1,
@@ -65,6 +68,37 @@ public class Context implements OpenCLObject<cl_context>, Closeable {
                 null
         );
         return new Program(program, this);
+    }
+
+    /**
+     * Create OpenCL program by OpenCL code source file
+     *
+     * @param filePath OpenCL code file name
+     * @param charset  file charset
+     * @return The Program object
+     * @throws IOException If load file failure
+     */
+    public Program createProgramWithSourceFile(Path filePath, Charset charset) throws IOException {
+        this.checkReleased();
+        try {
+            LOG.info("");
+            String code = new String(Files.readAllBytes(filePath), charset);
+            return this.createProgramWithSource(code);
+        } catch (IOException exception) {
+            LOG.error("Create OpenCL program failure! Read source failure. ", exception);
+            throw exception;
+        }
+    }
+
+    /**
+     * Check if this context has been released before create programs
+     */
+    private void checkReleased() {
+        if (this.hasReleased) {
+            ContextReleasedException exception = new ContextReleasedException();
+            LOG.error("Create OpenCL program failure! Context has been released. ", exception);
+            throw exception;
+        }
     }
 
     /**
