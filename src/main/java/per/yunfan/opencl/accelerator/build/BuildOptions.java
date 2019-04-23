@@ -211,4 +211,13 @@ public class BuildOptions {
         LOG.info("Created a build argument: " + argument);
         return argument;
     }
+
+    /**
+     * Does this build arguments is empty
+     *
+     * @return Is empty arguments
+     */
+    public boolean isEmpty() {
+        return this.options.isEmpty();
+    }
 }

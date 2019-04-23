@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.jocl.cl_program;
+import per.yunfan.opencl.accelerator.build.BuildOptions;
 import per.yunfan.opencl.accelerator.exceptions.BuildCLProgramFailureException;
 import per.yunfan.opencl.accelerator.exceptions.ProgramReleasedException;
 import per.yunfan.opencl.accelerator.gc.Closeable;
@@ -46,30 +47,46 @@ public class Program implements OpenCLObject<cl_program>, Closeable {
     }
 
     /**
-     * build this OpenCL program
+     * Build this OpenCL program
      *
+     * @param buildArguments Build arguments
      * @throws BuildCLProgramFailureException If build failure, then throw this exception
      */
-    public void build() throws BuildCLProgramFailureException {
+    public void build(BuildOptions buildArguments) throws BuildCLProgramFailureException {
         if (this.hasReleased) {
             ProgramReleasedException exception = new ProgramReleasedException();
             LOG.error("Build OpenCL program failure! Program has been released. ", exception);
             throw exception;
+        }
+        String argument;
+        if (buildArguments == null || buildArguments.isEmpty()) {
+            argument = null;
+        } else {
+            argument = buildArguments.create();
         }
         Device buildDevice = this.context.getDevice();
         int isSuccess = CL.clBuildProgram(
                 this.program,
                 1,
                 new cl_device_id[]{buildDevice.rawPointer()},
-                null,
+                argument,
                 null,
                 null
         );
-        if (isSuccess == CL.CL_SUCCESS) {
+        if (isSuccess != CL.CL_SUCCESS) {
             BuildCLProgramFailureException exception = new BuildCLProgramFailureException();
             LOG.error("Build OpenCL program failure! ", exception);
             throw exception;
         }
+    }
+
+    /**
+     * Build this OpenCL program with no any build arguments
+     *
+     * @throws BuildCLProgramFailureException If build failure, then throw this exception
+     */
+    public void build() throws BuildCLProgramFailureException {
+        build(null);
     }
 
     /**
