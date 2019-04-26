@@ -22,6 +22,21 @@ public class BuildOptions {
     private static final Logger LOG = LogManager.getLogger(BuildOptions.class);
 
     /**
+     * Use factory method to create instance/
+     */
+    private BuildOptions() {
+    }
+
+    /**
+     * Factory method, build an option instance.
+     *
+     * @return A build option instance
+     */
+    public static BuildOptions setup() {
+        return new BuildOptions();
+    }
+
+    /**
      * OpenCL version
      *
      * @param version OpenCL version string

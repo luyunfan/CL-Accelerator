@@ -9,4 +9,5 @@ public interface Closeable extends AutoCloseable {
      * @return Does the resources has been released
      */
     boolean hasReleased();
+
 }
