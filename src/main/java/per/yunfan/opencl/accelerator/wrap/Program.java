@@ -90,6 +90,16 @@ public class Program implements OpenCLObject<cl_program>, Closeable {
     }
 
     /**
+     * Create Kernel object from this program
+     *
+     * @param kernelName Kernel name
+     * @return Kernel object
+     */
+    public Kernel createKernel(String kernelName) {
+        return new Kernel(CL.clCreateKernel(this.program, kernelName, null));
+    }
+
+    /**
      * @return The context object of this program
      */
     public Context getContext() {
