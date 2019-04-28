@@ -33,6 +33,7 @@ public class DeviceTest {
                 for (Device device : devices) {
                     LOG.info("Found device: " + device);
                     LOG.info("Device type is: " + device.deviceType());
+                    LOG.info("Device Version is: " + device.getOpenCLVersion());
                 }
             }
         } catch (NoPlatformException e) {

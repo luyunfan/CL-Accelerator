@@ -18,6 +18,8 @@ import java.util.List;
  * Unit test class for Program
  */
 public class ProgramTest {
+
+
     /**
      * Test logger object
      */
@@ -51,7 +53,7 @@ public class ProgramTest {
                         program.build(options);
                         LOG.info("Program has build successful!");
                     } catch (BuildCLProgramFailureException e) {
-                        LOG.error("Program build failure! ",e);
+                        LOG.error("Program build failure! ", e);
                     }
                 }
             }
