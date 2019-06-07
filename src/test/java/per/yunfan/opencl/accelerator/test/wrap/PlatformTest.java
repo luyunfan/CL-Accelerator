@@ -3,7 +3,7 @@ package per.yunfan.opencl.accelerator.test.wrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
-import per.yunfan.opencl.accelerator.exceptions.NoPlatformException;
+import per.yunfan.opencl.accelerator.exceptions.checked.NoPlatformException;
 import per.yunfan.opencl.accelerator.wrap.Platform;
 
 import java.util.List;

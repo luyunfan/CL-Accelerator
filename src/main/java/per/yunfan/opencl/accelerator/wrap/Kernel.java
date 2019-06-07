@@ -15,7 +15,6 @@ import static org.jocl.CL.*;
  */
 public class Kernel implements OpenCLObject<cl_kernel>, Closeable {
 
-
     /**
      * Test logger object
      */
@@ -26,6 +25,9 @@ public class Kernel implements OpenCLObject<cl_kernel>, Closeable {
      */
     private final cl_kernel kernelPointer;
 
+    /**
+     * The Program object which created this kernel
+     */
     private final Program program;
 
     /**

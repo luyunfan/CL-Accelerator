@@ -6,8 +6,8 @@ import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.jocl.cl_program;
 import per.yunfan.opencl.accelerator.build.BuildOptions;
-import per.yunfan.opencl.accelerator.exceptions.BuildCLProgramFailureException;
-import per.yunfan.opencl.accelerator.exceptions.ProgramReleasedException;
+import per.yunfan.opencl.accelerator.exceptions.checked.BuildCLProgramFailureException;
+import per.yunfan.opencl.accelerator.exceptions.runtime.ProgramReleasedException;
 import per.yunfan.opencl.accelerator.gc.Closeable;
 
 /**
@@ -64,11 +64,11 @@ public class Program implements OpenCLObject<cl_program>, Closeable {
         } else {
             argument = buildArguments.create();
         }
-        Device buildDevice = this.context.getDevice();
+        Device[] buildDevices = this.context.getDevices();
         int isSuccess = CL.clBuildProgram(
                 this.program,
                 1,
-                new cl_device_id[]{buildDevice.rawPointer()},
+                new cl_device_id[]{buildDevices[0].rawPointer()},
                 argument,
                 null,
                 null

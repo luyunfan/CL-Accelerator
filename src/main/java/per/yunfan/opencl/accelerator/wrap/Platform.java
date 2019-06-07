@@ -2,11 +2,10 @@ package per.yunfan.opencl.accelerator.wrap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jocl.CL;
-import org.jocl.cl_device_id;
-import org.jocl.cl_platform_id;
+import org.jocl.*;
 import per.yunfan.opencl.accelerator.enums.DeviceType;
-import per.yunfan.opencl.accelerator.exceptions.NoPlatformException;
+import per.yunfan.opencl.accelerator.exceptions.checked.NoPlatformException;
+import per.yunfan.opencl.accelerator.exceptions.checked.NoTypeOfDeviceException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +55,33 @@ public class Platform implements OpenCLObject<cl_platform_id> {
                 .filter(Objects::nonNull)
                 .map(rawDevice -> new Device(rawDevice, this))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Create OpenCL context from device type
+     *
+     * @param type OpenCL device type
+     * @return OpenCL context
+     */
+    public Context createContextFromType(DeviceType type) throws NoTypeOfDeviceException {
+        LOG.info("Starting create OpenCL context by device type: " + type + ".");
+        cl_context_properties contextProperties = new cl_context_properties();
+        contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platform);
+        cl_context context = CL.clCreateContextFromType(contextProperties,
+                type.toCLType(),
+                null,
+                null,
+                null
+        );
+        if (context == null) { //Devices not found in platform by this type
+            throw new NoTypeOfDeviceException();
+        }
+
+        int[] num = new int[1]; //Get devices numbers
+        CL.clGetContextInfo(context, CL.CL_CONTEXT_NUM_DEVICES, Sizeof.cl_uint,
+                Pointer.to(num), null);
+
+        return new Context(context, num[0], this);
     }
 
     /**

@@ -29,6 +29,11 @@ public class Device implements OpenCLObject<cl_device_id> {
     private volatile String nameCache = null;
 
     /**
+     * The OpenCL device type cache
+     */
+    private DeviceType deviceTypeCache = null;
+
+    /**
      * The default value of OpenCL version cache
      */
     private static final float DEFAULT_VERSION_VALUE = -1994.1128f;
@@ -78,7 +83,10 @@ public class Device implements OpenCLObject<cl_device_id> {
      * @return The OpenCL device type
      */
     public DeviceType deviceType() {
-        return DeviceType.fromCLType(this.getDeviceLong(CL.CL_DEVICE_TYPE));
+        if (deviceTypeCache == null) {
+            deviceTypeCache = DeviceType.fromCLType(this.getDeviceLong(CL.CL_DEVICE_TYPE));
+        }
+        return deviceTypeCache;
     }
 
     /**
@@ -117,6 +125,13 @@ public class Device implements OpenCLObject<cl_device_id> {
         long[] values = new long[1];
         CL.clGetDeviceInfo(this.device, paramName, Sizeof.cl_long, Pointer.to(values), null);
         return values[0];
+    }
+
+    /**
+     * @return The platform of this device
+     */
+    public Platform getPlatform() {
+        return this.platform;
     }
 
     /**

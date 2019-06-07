@@ -1,7 +1,7 @@
 package per.yunfan.opencl.accelerator.enums;
 
 import org.jocl.CL;
-import per.yunfan.opencl.accelerator.exceptions.UnknownDeviceTypeException;
+import per.yunfan.opencl.accelerator.exceptions.runtime.UnknownDeviceTypeException;
 
 /**
  * OpenCL device deviceType enum

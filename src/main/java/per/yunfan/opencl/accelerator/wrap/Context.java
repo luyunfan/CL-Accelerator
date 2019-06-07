@@ -2,23 +2,20 @@ package per.yunfan.opencl.accelerator.wrap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jocl.CL;
-import org.jocl.cl_context;
-import org.jocl.cl_program;
-import per.yunfan.opencl.accelerator.exceptions.ContextReleasedException;
+import org.jocl.*;
+import per.yunfan.opencl.accelerator.exceptions.runtime.ContextReleasedException;
 import per.yunfan.opencl.accelerator.gc.Closeable;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Wrapped class of OpenCL context
  */
 public class Context implements OpenCLObject<cl_context>, Closeable {
-
 
     /**
      * Test logger object
@@ -31,9 +28,15 @@ public class Context implements OpenCLObject<cl_context>, Closeable {
     private final cl_context context;
 
     /**
-     * Device object of this context
+     * The platform of this context
      */
-    private final Device device;
+    private final Platform platform;
+
+    /**
+     * Devices object of this context, it could be null, if it length are not 1, that means
+     * this context may created by device type and it could have multiple device
+     */
+    private final Device[] devices;
 
     /**
      * Does this context has released
@@ -48,7 +51,28 @@ public class Context implements OpenCLObject<cl_context>, Closeable {
      */
     Context(cl_context context, Device device) {
         this.context = context;
-        this.device = device;
+        this.devices = new Device[]{device};
+        this.platform = device.getPlatform();
+    }
+
+    /**
+     * Context wrapper constructor
+     *
+     * @param context  Raw context pointer object
+     * @param num      number of devices
+     * @param platform OpenCL platform object
+     */
+    Context(cl_context context, int num, Platform platform) {
+        this.context = context;
+
+        cl_device_id[] devices = new cl_device_id[num];
+        CL.clGetContextInfo(context, CL.CL_CONTEXT_DEVICES, num * Sizeof.cl_device_id,
+                Pointer.to(devices), null);
+
+        this.platform = platform;
+        this.devices =  Arrays.stream(devices)
+                .map(raw -> new Device(raw, platform))
+                .toArray(Device[]::new);
     }
 
     /**
@@ -104,8 +128,15 @@ public class Context implements OpenCLObject<cl_context>, Closeable {
     /**
      * @return The device object of this context
      */
-    public Device getDevice() {
-        return this.device;
+    public Device[] getDevices() {
+        return this.devices;
+    }
+
+    /**
+     * @return The platform of this context
+     */
+    public Platform getPlatform() {
+        return this.platform;
     }
 
     /**

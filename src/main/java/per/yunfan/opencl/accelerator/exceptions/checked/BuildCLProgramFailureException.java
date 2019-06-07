@@ -1,4 +1,4 @@
-package per.yunfan.opencl.accelerator.exceptions;
+package per.yunfan.opencl.accelerator.exceptions.checked;
 
 /**
  * Build OpenCL program failure

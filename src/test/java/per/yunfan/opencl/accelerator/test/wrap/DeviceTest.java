@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import per.yunfan.opencl.accelerator.enums.DeviceType;
-import per.yunfan.opencl.accelerator.exceptions.NoPlatformException;
+import per.yunfan.opencl.accelerator.exceptions.checked.NoPlatformException;
 import per.yunfan.opencl.accelerator.wrap.Device;
 import per.yunfan.opencl.accelerator.wrap.Platform;
 
